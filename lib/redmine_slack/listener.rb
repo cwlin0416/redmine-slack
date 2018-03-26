@@ -162,10 +162,22 @@ class SlackListener < Redmine::Hook::Listener
 	end
 
 private
-	def escape(msg)
-		msg.to_s.gsub("&", "&amp;").gsub("<", "&lt;").gsub(">", "&gt;")
-	end
-
+        def escape(msg)
+                msg.to_s.
+                        gsub(/(\s)+/im, '').
+                        gsub(/(&nbsp;)+/im, ' ').
+                        gsub(/<li(| [^>]*)>/i, "* ").
+                        gsub(/<\/li>/i, "\n").
+                        gsub(/<(ul|ol)>/i, "\n").
+                        gsub(/<\/(ul|ol)>/i, "\n").
+                        gsub(/<br\s*\/?>/i, "\n").
+                        gsub( %r{</?[^>]+?>}, '' ).
+                        gsub("&lt;", "<").
+                        gsub("&gt;", ">").
+                        gsub("&", "&amp;").
+                        gsub("<", "&lt;").
+                        gsub(">", "&gt;")
+        end
 	def object_url(obj)
 		if Setting.host_name.to_s =~ /\A(https?\:\/\/)?(.+?)(\:(\d+))?(\/.+)?\z/i
 			host, port, prefix = $2, $4, $5
